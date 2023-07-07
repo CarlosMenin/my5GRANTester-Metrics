@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 
-test = '10000'
+test = 'dec_2000_390_20'
 base_filename = 'my5grantester_metrics_{}.csv'.format(test)
 colors = ['red', 'blue', 'green', 'orange', 'purple', 'gray']
 column_names = ['SM5G_PDU_SESSION_INACTIVE', 'MM5G_NULL', 'MM5G_DEREGISTERED', 'MM5G_REGISTERED_INITIATED', 'MM5G_REGISTERED', 'SM5G_PDU_SESSION_ACTIVE_PENDING']

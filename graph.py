@@ -2,17 +2,17 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 
-test = '10000'
+test = 'dec_2000_390_20'
 base_filename = 'my5grantester_metrics_{}.csv'.format(test)
 
 colors = ['red', 'blue', 'green', 'orange', 'purple', 'yellow', 'cyan', 'magenta', 'gray', 'brown']
-
+first_line = True
 for delay_ms in range(100, 101, 100):
     dados = pd.read_csv(base_filename.format(delay_ms))
     dados = dados.sort_values(by=dados.columns[0])
 
     for i in range(0, len(dados), 100):
-        first_line = True
+        
         timestamp = np.array([])
         connections = np.array([])
         grupo = dados.iloc[i:i + 100].copy()
