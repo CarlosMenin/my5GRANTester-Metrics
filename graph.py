@@ -1,52 +1,70 @@
+import os
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 
-test = 'dec_2000_390_20'
-base_filename = 'my5grantester_metrics_{}.csv'.format(test)
+pasta = os.getcwd()  # Obtém a pasta de trabalho atual
 
-colors = ['red', 'blue', 'green', 'orange', 'purple', 'yellow', 'cyan', 'magenta', 'gray', 'brown']
+colors = ['red', 'blue', 'green', 'orange', 'purple',
+          'yellow', 'cyan', 'magenta', 'gray', 'brown']
 first_line = True
-for delay_ms in range(100, 101, 100):
-    dados = pd.read_csv(base_filename.format(delay_ms))
-    dados = dados.sort_values(by=dados.columns[0])
 
-    for i in range(0, len(dados), 100):
-        
-        timestamp = np.array([])
-        connections = np.array([])
-        grupo = dados.iloc[i:i + 100].copy()
+for arquivo in os.listdir(pasta):
+    if arquivo.endswith(".csv"):
+        nome_arquivo = os.path.splitext(arquivo)[0]
+        test = nome_arquivo.split("_")[2]
 
-        for indice, linha in grupo.iterrows():
-            if first_line:
-                timestamp_base = linha['timestamp']
-                first_line = False
+        caminho_arquivo = os.path.join(pasta, arquivo)
+        base_filename = caminho_arquivo  # Use o nome do arquivo atual como base
 
-            timestamp = np.append(timestamp, (linha['timestamp'] - timestamp_base) / 1000000000)
-            connections = np.append(connections, linha['SM5G_PDU_SESSION_ACTIVE_PENDING'])
+        dados = pd.read_csv(base_filename)
+        dados = dados.sort_values(by=dados.columns[0])
 
-        color_index = i // 100  # Índice da cor com base no grupo atual
-        cor = colors[color_index % len(colors)]
+        for i in range(0, len(dados), 100):
 
-        plt.scatter(timestamp, connections, label="Tester {}".format(color_index), color=cor)
+            timestamp = np.array([])
+            connections = np.array([])
+            grupo = dados.iloc[i:i + 100].copy()
 
-        # Calcular a média considerando NaN como zero
-        mean_value = np.nanmean(connections)
-        # Traçar linha reta com valor médio
-        plt.axhline(y=mean_value, color=cor, linestyle='-', label="Média")
-        plt.text(max(timestamp), mean_value, f'{mean_value:.2f}', ha='left', va='center')
+            for indice, linha in grupo.iterrows():
+                if first_line:
+                    timestamp_base = linha['timestamp']
+                    first_line = False
 
-        # Calcular o desvio padrão
-        std_value = np.nanstd(connections)
-        # Traçar linha reta com desvio padrão
-        plt.axhline(y=mean_value + std_value, color=cor, linestyle='--', label="Desvio Padrão")
-        plt.axhline(y=mean_value - std_value, color=cor, linestyle='--')
-        plt.text(max(timestamp), mean_value + std_value, f'{mean_value+std_value:.2f}', ha='left', va='center')
-        plt.text(max(timestamp), mean_value - std_value, f'{mean_value-std_value:.2f}', ha='left', va='center')
+                timestamp = np.append(
+                    timestamp, (linha['timestamp'] - timestamp_base) / 1000000000)
+                connections = np.append(
+                    connections, linha['SM5G_PDU_SESSION_ACTIVE_PENDING'])
 
-        plt.title('{}-{}'.format(test, color_index))
-        plt.xlabel('Tempo do experimento (s)')
-        plt.ylabel('Tempo até conexão (ms)')
-        plt.legend()
-        plt.savefig('graph_connections_{}-{}.png'.format(test, color_index))
-        plt.clf()
+            color_index = i // 100  # Índice da cor com base no grupo atual
+            cor = colors[color_index % len(colors)]
+
+            plt.scatter(timestamp, connections,
+                        label="Tester {}".format(color_index), color=cor)
+
+            # Calcular a média considerando NaN como zero
+            mean_value = np.nanmean(connections)
+            # Traçar linha reta com valor médio
+            plt.axhline(y=mean_value, color=cor, linestyle='-', label="Média")
+            plt.text(max(timestamp), mean_value,
+                     f'{mean_value:.2f}', ha='left', va='center')
+
+            # Calcular o desvio padrão
+            std_value = np.nanstd(connections)
+            # Traçar linha reta com desvio padrão
+            plt.axhline(y=mean_value + std_value, color=cor,
+                        linestyle='--', label="Desvio Padrão")
+            plt.axhline(y=mean_value - std_value, color=cor, linestyle='--')
+            plt.text(max(timestamp), mean_value + std_value,
+                     f'{mean_value+std_value:.2f}', ha='left', va='center')
+            plt.text(max(timestamp), mean_value - std_value,
+                     f'{mean_value-std_value:.2f}', ha='left', va='center')
+
+            plt.title('{}-{}'.format(test, color_index))
+            plt.xlabel('Tempo do experimento (s)')
+            plt.ylabel('Tempo até conexão (ms)')
+            plt.legend(loc='upper right', bbox_to_anchor=(
+                1.0, 1.0), fontsize='6')
+            plt.savefig(
+                'graph_connections_{}-{}.png'.format(test, color_index))
+            plt.clf()
