@@ -4,10 +4,15 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 pasta = os.getcwd()  # Obtém a pasta de trabalho atual
+pasta_conexoes = os.path.join(pasta, 'Conexões')  # Caminho para a pasta 'conexões'
 
 colors = ['red', 'blue', 'green', 'orange', 'purple',
           'yellow', 'cyan', 'magenta', 'gray', 'brown']
 first_line = True
+
+# Cria a pasta 'conexões' se ela não existir
+if not os.path.exists(pasta_conexoes):
+    os.makedirs(pasta_conexoes)
 
 for arquivo in os.listdir(pasta):
     if arquivo.endswith(".csv"):
@@ -65,6 +70,10 @@ for arquivo in os.listdir(pasta):
             plt.ylabel('Tempo até conexão (ms)')
             plt.legend(loc='upper right', bbox_to_anchor=(
                 1.0, 1.0), fontsize='6')
-            plt.savefig(
-                'graph_connections_{}-{}.png'.format(test, color_index))
+            
+            # Salvar o gráfico na pasta 'conexões'
+            nome_grafico = 'graph_connections_{}-{}.png'.format(test, color_index)
+            caminho_grafico = os.path.join(pasta_conexoes, nome_grafico)
+            plt.savefig(caminho_grafico)
             plt.clf()
+
